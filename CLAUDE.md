@@ -16,13 +16,18 @@
 
 אין צורך להריץ `wrangler` ידנית. commit ו-push זה כל מה שנדרש.
 
-**אם push הצליח אבל האתר לא התעדכן** — אל תניח שזה קאש. הכשל שקרה בעבר: ה-GitHub App של Cloudflare היה מוגדר `Only select repositories` בלי הריפו הזה ברשימה, ולכן פושים לא הפעילו בנייה בכלל, בשקט וללא שגיאה. בדיקה מהירה:
+**אם push הצליח אבל האתר לא התעדכן** — אל תניח שזה קאש, ואל תחכה יותר מדקה. הכשל שקרה בעבר: ה-GitHub App של Cloudflare היה מוגדר `Only select repositories` בלי הריפו הזה ברשימה, ולכן פושים לא הפעילו בנייה בכלל — בשקט מוחלט, בלי שגיאה, ו-`git push` דיווח הצלחה.
+
+הבדיקה הישירה היא להשוות את מה שנדחף למה שמוגש:
 
 ```bash
-curl -s https://api.github.com/repos/Mendywfeld/moveupgym/deployments | head -c 200
+# מחרוזת ייחודית שהוספת בקומיט האחרון
+curl -s https://moveupgym.com/ | grep -c 'הטקסט החדש'
 ```
 
-אם מוחזר מערך ריק אחרי push, החיבור שבור — הבעיה בהרשאות ב-`github.com/settings/installations`, לא בקאש ולא בקוד.
+אם זה 0 אחרי דקה, החיבור שבור. התיקון: https://github.com/settings/installations → Cloudflare Workers and Pages → Repository access → לוודא ש-`Mendywfeld/moveupgym` ברשימה.
+
+**אל תשתמש ב-`/deployments` של GitHub API כאבחון.** Workers Builds לא רושם deployments ב-GitHub, ולכן הוא מחזיר מערך ריק גם כשהפרסום עובד מושלם. זו הובלה שולל.
 
 ## כללי עבודה
 

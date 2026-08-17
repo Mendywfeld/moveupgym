@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# אתר תדמית לחוג התעמלות קרקע ואקרובטיקה לבנות, קריית מלאכי.
+# תוכן כללי, מתאים לכל גיל.
+
+Sitemap: https://moveupgym.com/sitemap.xml

@@ -131,3 +131,35 @@ python3 -m http.server 8899 &
 ## מקור העיצוב
 
 העיצוב המקורי נבנה ככלי עיצוב חיצוני ו-`index.html` הוא הפלט המקומפל שלו. שינויי טקסט וצבע — בצע ישירות כאן. שינויי מבנה גדולים או עיצוב מחדש — עדיף לחזור לכלי העיצוב ולייצא מחדש, אחרת שתי הגרסאות יתפצלו.
+
+## Cloudflare משורת הפקודה
+
+יש טוקן API מקומי לעריכת כללי הפניה, כדי לא להיות תלויים בדשבורד ובסשן דפדפן.
+
+| קובץ | תוכן |
+| --- | --- |
+| `~/.cf-token` | הטוקן. הרשאה: `Zone → Single Redirect → Edit` בלבד |
+| `~/.cf-zones` | מזהי zone וחשבון |
+
+שני הקבצים ב-`chmod 600` ומחוץ לריפו — **לעולם אל תוסיף אותם לגיט, הריפו ציבורי.**
+
+בדיקת תקינות:
+```bash
+T=$(cat ~/.cf-token)
+curl -s -H "Authorization: Bearer $T" \
+  https://api.cloudflare.com/client/v4/user/tokens/verify | python3 -m json.tool
+```
+
+קריאת כללי ההפניה של הדומיין הכפול:
+```bash
+T=$(cat ~/.cf-token); . ~/.cf-zones
+curl -s -H "Authorization: Bearer $T" \
+  "https://api.cloudflare.com/client/v4/zones/$ZONE_MOOVEUPGYM/rulesets/phases/http_request_dynamic_redirect/entrypoint" \
+  | python3 -m json.tool
+```
+
+**מגבלה:** הטוקן קיים רק על המק. סשן ענן מהטלפון לא רואה אותו, ולכן שינויי Cloudflare מהטלפון עדיין לא אפשריים. עריכת האתר עצמו מהטלפון כן עובדת — היא עוברת דרך גיט, לא דרך Cloudflare.
+
+## דומיינים
+
+`moveupgym.com` הוא הדומיין היחיד שמגיש תוכן. `mooveupgym.com` (שתי o) מפנה אליו ב-301 קבוע דרך Redirect Rule, אחרי שהתברר שהוא הגיש גרסה ישנה ודורג מעל הדומיין הנכון. אל תחזיר אותו להגיש תוכן — זה מפצל את אותות ה-SEO ויוצר כפילות מול גוגל.
